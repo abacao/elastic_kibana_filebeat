@@ -1,0 +1,30 @@
+# Elastic Training VM
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "centos/7"
+    config.vm.boot_timeout = 60
+    config.ssh.username = "vagrant"
+    config.ssh.insert_key = false
+    config.vm.define "elastic" do |box|
+        box.vm.hostname = "elastic"
+	      box.vm.network "forwarded_port", guest: 80, host: 8080
+        box.vm.network "forwarded_port", guest: 5601, host: 5601
+	      box.vm.network "forwarded_port", guest: 9200, host: 9200
+	      box.vm.network "forwarded_port", guest: 5044, host: 5044
+	      box.vm.provider :virtualbox do |vbox|
+            vbox.customize [
+                "modifyvm", :id,
+                "--memory", "8192",
+                "--cpus", "2",
+                "--pae", "on",
+                "--hwvirtex", "on",
+                "--vtxvpid", "on",
+                "--vtxux", "on",
+                "--nestedpaging", "off"
+            ]
+        end
+    config.vm.provision "shell", path: "localhost.sh"
+  end
+end

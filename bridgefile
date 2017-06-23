@@ -1,0 +1,28 @@
+# Provisions Openstack Training VM
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "centos/7"
+    config.vm.boot_timeout = 60
+    config.ssh.username = "vagrant"
+    config.ssh.insert_key = false
+    config.vm.define "elastic" do |box|
+        box.vm.hostname = "elastic"
+        config.vm.network "public_network", bridge: "bridge0", adapter: "1"
+#        box.vm.network :public_network, :public_network => "bridge0"
+	box.vm.provider :virtualbox do |vbox|
+            vbox.customize [
+                "modifyvm", :id,
+                "--memory", "8192",
+                "--cpus", "2",
+                "--pae", "on",
+                "--hwvirtex", "on",
+                "--vtxvpid", "on",
+                "--vtxux", "on",
+                "--nestedpaging", "off"
+            ]
+        end
+        #box.vm.provision "shell", path: "getstuffready.sh"
+    end
+end
